@@ -1,3 +1,10 @@
+Archivos/CSV/*
+Archivos/graficaIMG/*
+Archivos/JSON/*
+# Archivos de planeación
+analisis_exploratorio.py
+entrenamiento_modelo.py
+visualizacion_predicciones.py
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
