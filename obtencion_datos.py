@@ -1,6 +1,7 @@
 import yfinance as yf
 import pandas as pd
 import matplotlib.pyplot as plt
+import json
 
 
 class ErrorDatosNoDisponibles (Exception):
@@ -61,7 +62,22 @@ class PreciosAccion:
         # fechaHoraParaArchivo = fechaHoraParaArchivo.replace(" ", "_")
 
         self.df.to_csv("./Archivos/CSV/"+self.ticker_symbol + '_datos_historicos.csv')
- 
+    def guardar_datos_JSON(self):
+        datos = []
+        for fecha, fila in self.df.iterrows():
+            datos.append({
+                "fecha": fecha.strftime("%Y-%m-%d"),
+                "apertura": fila['Apertura'],
+                "alto": fila['Alto'],
+                "bajo": fila['Bajo'],
+                "cierre": fila['Cierre'],
+                "volumen": fila['Volumen'],
+                "dividendos": fila['Dividendos'],
+                "divisiones_de_acciones": fila['Divisiones de acciones']
+            })
+        with open(f"./Archivos/JSON/{self.ticker_symbol}_datos_historicos.json", 'w') as json_file:
+            json.dump(datos, json_file, indent=4)
+        
     def getDataFrame(self):
         return self.df
     def getSignificantData(self):
@@ -123,9 +139,7 @@ class PreciosAccion:
         elif self.años == "Maximo":
             return "desde el inicio de la cotización"
 
-prueba = PreciosAccion('AAPL', 'inicioAño')
+prueba = PreciosAccion('AAPL', '1')
 prueba.guardar_datos_CSV()
-# prueba.graficar_datos_precios()
-# prueba.graficar_datos_especifico("Apertura")
-prueba.guardarGrafico(prueba.graficar_datos_especifico("Apertura"))
-print(prueba.obenerIMG())
+prueba.guardar_datos_JSON()
+prueba.guardarGrafico(prueba.graficar_datos_especifico("Cierre"))
