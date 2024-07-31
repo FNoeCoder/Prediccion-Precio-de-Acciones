@@ -1,9 +1,19 @@
+# Ignorar todos los archivos en las subcarpetas de 'Archivos'
 Archivos/CSV/*
 Archivos/graficaIMG/*
 Archivos/JSON/*
-# Archivos de planeación
-analisis_exploratorio.py
-entrenamiento_modelo.py
+
+# No ignorar las carpetas
+!Archivos/
+!Archivos/CSV/
+!Archivos/graficaIMG/
+!Archivos/JSON/
+
+# No ignorar los archivos de marcador
+!Archivos/CSV/.gitkeep
+!Archivos/graficaIMG/.gitkeep
+!Archivos/JSON/.gitkeep
+
 visualizacion_predicciones.py
 # Byte-compiled / optimized / DLL files
 __pycache__/
