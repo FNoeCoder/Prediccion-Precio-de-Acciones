@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import json
 
-from ErroresPerzonalizados import ErrorDatosNoDisponibles, ErrorRangoAñosInvalido
+from Clases.ErroresPerzonalizados import ErrorDatosNoDisponibles, ErrorRangoAñosInvalido
 
 class PreciosAccion:
     def __init__(self, ticker_symbol, años):
