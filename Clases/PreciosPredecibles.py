@@ -65,6 +65,8 @@ class PreciosPredecibles:
         datos['Fecha'] = datos.index.strftime('%d-%m-%Y')
         # reordenar las columnas
         datos = datos[['Fecha', 'Tipo', self.etapa]]
+        # cambiar el nombre de self.etapa a Precio
+        datos = datos.rename(columns={self.etapa: 'Precio'})
 
         return datos
 
