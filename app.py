@@ -17,13 +17,20 @@ def predict():
         historial = PreciosAccion(ticker, years)
         preciosConPredicciones = PreciosPredecibles(historial.getDataFrame(), tipo)
         datos = preciosConPredicciones.getDataFrame()
+        grafico_base64 = preciosConPredicciones.graficar_predicciones_base64()
+        grafico_base64_EDA = preciosConPredicciones.graficar_eda_base64()
+        evaluacion = preciosConPredicciones.evaluar_modelo()
+
 
         return jsonify(
             {
                 'ticker': ticker,
                 'years': years,
                 'tipo': tipo,
-                'data': datos.to_dict(orient='records')
+                'data': datos.to_dict(orient='records'),
+                'grafico': grafico_base64,
+                'graficoEDA': grafico_base64_EDA,
+                'evaluacion': evaluacion
             }
             )
     except Exception as e:

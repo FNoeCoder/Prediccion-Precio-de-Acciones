@@ -1,7 +1,14 @@
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
 from Clases.PreciosAccion import PreciosAccion
+import io
+import base64
+import seaborn as sns
+from sklearn.metrics import mean_squared_error, mean_absolute_error
+import numpy as np
 
 class PreciosPredecibles:
     def __init__(self, DataFrameDatosObtenidos, etapa):
@@ -69,6 +76,79 @@ class PreciosPredecibles:
         datos = datos.rename(columns={self.etapa: 'Precio'})
 
         return datos
+    
+    def graficar_predicciones_base64(self):
+        predicciones = self.predecir()
+        predicciones = pd.DataFrame(predicciones)
+        predicciones.columns = ['PredicciónCierre']
+        predicciones.index = pd.date_range(start=self.DataFrameDatosObtenidos.index[-1], periods=self.pasos+1, freq='D')[1:]
+        
+        plt.figure(figsize=(20, 5))
+        self.DataFrameDatosObtenidos[self.etapa].plot()
+        predicciones['PredicciónCierre'].plot()
+        plt.legend(["Datos reales", "Predicciones"])
+        plt.title(f'Predicción {self.etapa} de precios de {self.pasos} días')
+        plt.ylabel('Precio')
+        plt.xlabel('Fecha')
+        plt.grid()
+
+        # Guardar la imagen en un buffer en memoria
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png')
+        buf.seek(0)
+        
+        # Convertir la imagen a base64
+        img_base64 = base64.b64encode(buf.read()).decode('utf-8')
+        
+        # Cerrar el buffer y la figura
+        buf.close()
+        plt.close()
+
+        return img_base64
+    def graficar_eda_base64(self):
+        # Crear una figura con dos subgráficos
+        fig, axs = plt.subplots(1, 2, figsize=(20, 10))
+        
+        # Gráfico de distribución de datos
+        sns.histplot(self.DataFrameDatosObtenidos[self.etapa], ax=axs[0])
+        axs[0].set_title('Distribución de Datos')
+
+        # Gráfico de correlación entre variables
+        sns.heatmap(self.DataFrameDatosObtenidos.corr(), annot=True, ax=axs[1], cmap='coolwarm')
+        axs[1].set_title('Mapa de Calor de Correlaciones')
+        
+        plt.tight_layout()
+
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png')
+        buf.seek(0)
+        
+        img_base64 = base64.b64encode(buf.read()).decode('utf-8')
+        
+        buf.close()
+        plt.close(fig)
+
+        return img_base64
+    
+    def evaluar_modelo(self):
+        # Obtener datos verdaderos y predicciones
+        datos_verdaderos = self.DataFrameDatosObtenidos[self.etapa].iloc[-self.pasos:].values
+        predicciones = self.predecir()
+        
+        # Comparar predicciones con los datos verdaderos
+        predicciones = predicciones.values
+        
+        # Calcular RMSE y MAE
+        rmse = np.sqrt(mean_squared_error(datos_verdaderos, predicciones))
+        mae = mean_absolute_error(datos_verdaderos, predicciones)
+        
+        return {
+            # rmse y mae son los valores de error
+            # rmse se refiere a la raíz cuadrada del error cuadrático medio
+            # mae se refiere al error absoluto medio
+            'rmse': rmse,
+            'mae': mae
+        }
 
 if __name__ == "__main__":
     prueba = PreciosAccion('AAPL', '1')
